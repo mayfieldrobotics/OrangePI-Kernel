@@ -38,7 +38,7 @@ MODULE_LICENSE ("GPL");
 
 //#define vfe_dev_dbg(fmt, arg...) printk(KERN_DEBUG "[DEBUG]" SENSOR_NAME ": "fmt" (%s:%d)\n", ##arg , FILE_NAME, __LINE__)
 
-#define debug_line               printk(KERN_DEBUG "[DEBUG]" SENSOR_NAME ": "%s: %s : %d\n", FILE_NAME, __func__, __LINE__);
+#define debug_line               printk(KERN_DEBUG "[DEBUG]" SENSOR_NAME ": %s: %s : %d\n", FILE_NAME, __func__, __LINE__);
 #define debug_profile(x, arg...) printk(KERN_DEBUG "[DEBUG]" SENSOR_NAME ": "x" (%s:%d)\n", ##arg, FILE_NAME, __LINE__);
 #define function_profile         printk(KERN_DEBUG "[DEBUG]" SENSOR_NAME ": %s (%s:%d)\n", __func__, FILE_NAME, __LINE__);
 #else
@@ -77,7 +77,7 @@ MODULE_LICENSE ("GPL");
 static inline struct sensor_info* to_state(struct v4l2_subdev* sd) { return container_of(sd, struct sensor_info, sd); }
 
 
-static struct sensor_format_struct {
+struct sensor_format_struct {
     __u8* desc;
     //__u32 pixelformat;
     enum v4l2_mbus_pixelcode mbus_code;
@@ -92,7 +92,7 @@ static struct sensor_format_struct {
 static struct sensor_format_struct sensor_formats[] = { // local
     {
         .desc = "Raw 8-bit CMOS data",
-        .mbus_code = V4L2_MBUS_FMT_GREY8_1X8,
+        .mbus_code = V4L2_MBUS_FMT_Y8_1X8,
         .regs = 0,
         .regs_size = 0,
         .bpp = 1
@@ -120,7 +120,6 @@ static int sensor_g_exif(struct v4l2_subdev* sd, struct sensor_exif_attribute* e
 {
     int ret = 0;
     // meaningless placeholder (we can't get EXIF data, we don't have a CCI) to preserve structure
-    gain = val;
     exif->fnumber = 0;
     exif->focal_length = 0;
     exif->brightness = 0;
@@ -136,6 +135,7 @@ static int sensor_g_exif(struct v4l2_subdev* sd, struct sensor_exif_attribute* e
 
 static int sensor_enum_fmt(struct v4l2_subdev* sd, unsigned index, enum v4l2_mbus_pixelcode* code)
 {
+    function_profile;
     if (index >= N_FMTS) return -EINVAL;
 
     *code = sensor_formats[index].mbus_code;
@@ -144,6 +144,7 @@ static int sensor_enum_fmt(struct v4l2_subdev* sd, unsigned index, enum v4l2_mbu
 
 static int sensor_enum_size(struct v4l2_subdev* sd, struct v4l2_frmsizeenum* fsize)
 {
+    function_profile;
     if (fsize->index > N_WIN_SIZES - 1) return -EINVAL;
 
     fsize->type = V4L2_FRMSIZE_TYPE_DISCRETE;
@@ -155,6 +156,7 @@ static int sensor_enum_size(struct v4l2_subdev* sd, struct v4l2_frmsizeenum* fsi
 
 static int sensor_try_fmt(struct v4l2_subdev* sd, struct v4l2_mbus_framefmt* fmt) // TODO
 {
+    function_profile;
     int index;
     struct sensor_win_size* wsize;
 
@@ -187,6 +189,7 @@ static int sensor_try_fmt(struct v4l2_subdev* sd, struct v4l2_mbus_framefmt* fmt
 
 static int sensor_s_fmt(struct v4l2_subdev* sd, struct v4l2_mbus_framefmt* fmt) // TODO
 {
+    function_profile;
     int ret;
     unsigned int temp = 0, shutter = 0;
     unsigned char val;
@@ -199,8 +202,8 @@ static int sensor_s_fmt(struct v4l2_subdev* sd, struct v4l2_mbus_framefmt* fmt) 
     //vfe_dev_dbg("sensor_s_fmt\n");
 
     //////////////shutter-gain///////////////
-    ret = sensor_try_fmt_internal(sd, fmt, &sensor_fmt, &wsize);
-    if (ret) return ret;
+    //ret = sensor_try_fmt_internal(sd, fmt, &sensor_fmt, &wsize);
+    //if (ret) return ret;
 
     if (hres == 0) {
         if ((wsize->width == VGA_WIDTH) && (wsize->height == VGA_HEIGHT)) {
@@ -232,6 +235,7 @@ static int sensor_s_fmt(struct v4l2_subdev* sd, struct v4l2_mbus_framefmt* fmt) 
 
 static int sensor_g_parm(struct v4l2_subdev* sd, struct v4l2_streamparm* parms) // TODO
 {
+    function_profile;
     struct v4l2_captureparm* cp = &parms->parm.capture;
     struct sensor_info* info = to_state(sd);
 

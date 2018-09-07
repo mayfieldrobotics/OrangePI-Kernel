@@ -1,33 +1,28 @@
-Linux Kernel for OrangePI H3 boards
-===================================
+Magellan kernel - an Orange Pi 3.4 kernel
+=========================================
 
-About
------
+This repository contains reciped and scripts to build the kernel
+used on the Magellan board.
 
-The repository contains Linux kernel sources (3.4.39) adapted for OrangePI H3 boards, gcc toolchain, adapted rootfs and building scripts.
+The old instructions and files have been moved to `old/`
 
-Building
---------
 
-Kernel config files and the files specific to OPI board are placed in **build** directory.
+How to build
+------------
 
-The included build script *build_linux_kernel.sh* can be used to build the kernel<br />
-`./build_linux_kernel.sh [clean | all | 2 | plus] [clean]`
 
-**clean** as 1st parameter cleans the kernell tree and build directories<br />
-**clean** as 2nd parameter cleans the kernell tree before build<br />
-**all** builds the uImage for OPI-2 & OPI-PLUS<br />
-**2** builds the uImage for OPI-2<br />
-**plus** builds the uImage for OPI-PLUS<br />
+1. install a few dependencies:
+   ```bash
+   sudo apt-get install fakeroot kernel-package u-boot-tools gcc-arm-linux-gnueabihf
+   ```
 
-After the build the resulting kernel files (uImage and kernel modules) are placed into **build** directory.
+1. build the kernel debians & u-boot image:
+   ```bash
+   ./build.sh
+   ```
 
-To build **script.bin** for all OPI boards and resolutions run:<br />
-`./build_scripts [clean]`<br />
-**clean** as 1st parameter cleans the scripts and logs<br />
+This will generate 3 files:
 
-After the build the *script.bin* are placed into **build** directory.
-
-To **configure kernel** run:<br />
-`./config_linux_kernel.sh`
-
+- `linux-image-.....deb`: the kernel package (with modules)
+- `linux-headers-.....deb`: the headers (to build more modules later)
+- `uImage`: the u-boot compatible kernel (to be placed in the boot partition)

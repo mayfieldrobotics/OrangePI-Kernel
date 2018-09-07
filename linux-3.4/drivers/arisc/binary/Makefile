@@ -40,3 +40,5 @@ $(obj)/$(PLATFORM).bin : $(obj)/$(PLATFORM).code
 
 $(obj)/arisc_binary.o : $(obj)/$(PLATFORM).bin FORCE
 obj-y=arisc_binary.o
+
+asflags-y = -Wa,-I$(PWD)/$(obj)
